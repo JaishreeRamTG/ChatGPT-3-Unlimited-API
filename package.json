@@ -1,7 +1,7 @@
 {
-  "name": "midjourney",
+  "name": "ChatGPT-3-Unlimited-API",
   "version": "1.0.0",
-  "description": "An application using Midjourney",
+  "description": "Unlimited API for ChatGPT extracted from chatgpt.ai",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -10,7 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^1.4.0",
-    "cheerio": "^1.0.0-rc.12",
-    "fake-useragent": "^1.0.1"
+    "cheerio": "^1.0.0-rc.12"
   }
 }
