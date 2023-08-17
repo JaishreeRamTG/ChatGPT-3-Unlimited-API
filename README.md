@@ -1,2 +1,22 @@
 # ChatGPT-3-Unlimited-API
 This JavaScript code interacts with the ChatGPT AI chatbot on the ChatGPT website. It sends a message to the chatbot and receives the response. The code uses Axios for making HTTP requests and Cheerio for web scraping.
+
+![Screenshot](URL)
+
+
+API Crawled from chatgpt.ai
+Enjoy unlimited queries with no limits! 😄
+
+## How To Use
+
+1. Import the necessary libraries in your JavaScript code.
+2. Call the `chatgpt` function with your chat input as a parameter.
+3. The function returns the response from the ChatGPT API.
+
+Example Usage:
+
+```javascript
+(async () => {
+  const result = await chatgpt("who is elon musk");
+  console.log(result);
+})();
