@@ -5,7 +5,7 @@ This JavaScript code interacts with the ChatGPT AI chatbot on the ChatGPT websit
 ![Screenshot](Screenshot_2023-08-17-15-04-15-908_com.foxdebug.acode.jpg)
 
 API Crawled from chatgpt.ai
-Enjoy unlimited queries with no limits! 😄
+Enjoy unlimited queries with no limits! 
 
 ## How To Use
 
