@@ -1,7 +1,7 @@
 # ChatGPT-3-Unlimited-API
 This JavaScript code interacts with the ChatGPT AI chatbot on the ChatGPT website. It sends a message to the chatbot and receives the response. The code uses Axios for making HTTP requests and Cheerio for web scraping.
 
-![Screenshot](URL)
+![Screenshot](Screenshot_2023-08-17-15-04-15-908_com.foxdebug.acode.jpg)
 
 
 API Crawled from chatgpt.ai
