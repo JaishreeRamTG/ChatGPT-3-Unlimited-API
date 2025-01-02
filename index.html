@@ -1,129 +1,228 @@
-import tkinter as tk
-from tkinter import ttk
-import requests
-from threading import Thread
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ChatGPT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-# Colors
-BG_COLOR = "#f5f5f5"  # Light gray
-TEXT_COLOR = "#333333"  # Dark gray
-USER_COLOR = "#007bff"  # Blue
-AI_COLOR = "#28a745"  # Green
-ERROR_COLOR = "#dc3545"  # Red
+        #banner {
+            background-color: #007BFF;
+            color: white;
+            padding: 5px;
+            text-align: center;
+            font-size: 20px;
+        }
 
-# Fonts
-FONT_FAMILY = "Arial"
-FONT_SIZE = 10
+        #chat-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: #f5f5f5;
+            margin: 20px;
+        }
 
-def send_message(event=None):
-    prompt = entry.get()
-    if prompt:
-        # Display user message
-        chat_box.configure(state=tk.NORMAL)
-        chat_box.insert(tk.END, "User: " + prompt + "\n", "user")
-        chat_box.configure(state=tk.DISABLED)
+        #chatbox {
+            width: 100%;
+            max-width: 600px;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
 
-        # Clear the entry field
-        entry.delete(0, tk.END)
+        .user-message {
+            text-align: right;
+            color: #3d3d3d;
+            display: flex;
+            align-items: center;
+            margin: 10px;
+        }
 
-        # Start loading animation
-        progress_bar.start()
+        #sendButton {
+            width: 70px;
+            height: 40px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 20px;
+            font-size: 18px;
+        }
 
-        # Start typing animation
-        typing_label.config(text="AI is typing...", fg=AI_COLOR)
+        .user-logo {
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+        }
 
-        # Send request in a separate thread
-        thread = Thread(target=send_request, args=(prompt,))
-        thread.start()
+        .bot-message {
+            text-align: left;
+            color: #3d3d3d;
+            display: flex;
+            align-items: flex-end;
+            margin: 10px;
+        }
 
-def send_request(prompt):
-    url = "http://127.0.0.1:4040/?text=" + prompt
-    response = requests.get(url)
-    if response.status_code == 200:
-        # Update chat box with API response
-        chat_box.configure(state=tk.NORMAL)
-        chat_box.insert(tk.END, "AI: " + response.text + "\n", "ai")
-        chat_box.configure(state=tk.DISABLED)
-    else:
-        chat_box.configure(state=tk.NORMAL)
-        chat_box.insert(tk.END, "Error: Failed to get response from the API.\n", "error")
-        chat_box.configure(state=tk.DISABLED)
+        .message {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            word-wrap: break-word;
+            white-space: pre-line;
+        }
 
-    # Stop loading animation
-    progress_bar.stop()
+        .message.bot-message {
+            background-color: #f0f0f0;
+        }
 
-    # Stop typing animation
-    typing_label.config(text="")
+        .bot-reply {
+            display: flex;
+            align-items: center;
+        }
 
-    # Scroll to the end of the chat history
-    chat_box.yview(tk.END)
+        .chatbot-logo {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
 
-def on_enter(event):
-    send_button.config(bg="#007bff", fg="white")
+        #userLogo {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
 
-def on_leave(event):
-    send_button.config(bg="white", fg="#333333")
+        #questionTypeBox {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            border-radius: 20px;
+        }
 
-# Create the main window
-window = tk.Tk()
-window.title("Chat System")
-window.configure(bg=BG_COLOR)
+        .user-logo {
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+        }
 
-# Create a frame for the chat history and scrollbar
-chat_frame = ttk.Frame(window)
-chat_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+        #inputContainer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+            background-color: white;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="banner">
+        <h1>CHATGPT WEB</h1>
+    </div>
+    <div id="chat-container">
+        <div id="chatbox"></div>
+        <div id="inputContainer">
+            <img id="userLogo" src="http://telegra.ph/file/be3864b1ac58b1231b6d2.jpg" alt="User Logo">
+            <input type="text" id="questionTypeBox" placeholder="Type your question...">
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
 
-# Configure grid weights for chat_frame
-window.grid_columnconfigure(0, weight=1)
-window.grid_rowconfigure(0, weight=1)
+    <script>
+        const chatbox = document.getElementById('chatbox');
+        const questionTypeBox = document.getElementById('questionTypeBox');
+        const sendButton = document.getElementById('sendButton');
+//Made By NEPCODER @DEVSNP
+        sendButton.addEventListener('click', sendMessage);
+        questionTypeBox.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+ //Made By NEPCODER @DEVSNP
+        function addMessage(message, isUser = false) {
+            const messageElement = document.createElement('div');
+            messageElement.className = isUser ? 'user-message message' : 'bot-message message';
+            if (isUser) {
+                const userLogo = document.createElement('img');
+                userLogo.className = 'user-logo';
+                userLogo.src = 'http://telegra.ph/file/be3864b1ac58b1231b6d2.jpg';
+                messageElement.appendChild(userLogo);
+            }
+            messageElement.textContent = message;
+            chatbox.appendChild(messageElement);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+ //Made By NEPCODER @DEVSNP
+        async function fetchAnswerFromAPI(question) {
+            try {
+                const apiUrl = `https://chatgpt.apinepdev.workers.dev/?question=${encodeURIComponent(question)}`;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                const answer = data.answer;
 
-# Create a text box to display the chat history
-chat_box = tk.Text(chat_frame, state=tk.DISABLED, wrap=tk.WORD, bg=BG_COLOR, fg=TEXT_COLOR)
-chat_box.grid(row=0, column=0, sticky="nsew")
-chat_box.tag_configure("user", foreground=USER_COLOR)
-chat_box.tag_configure("ai", foreground=AI_COLOR)
-chat_box.tag_configure("error", foreground=ERROR_COLOR)
+ //Made By NEPCODER @DEVSNP
+                const loadingMessage = chatbox.querySelector('.bot-message.message:last-child');
+                if (loadingMessage) {
+                    loadingMessage.textContent = `Bot: ${answer}`;
+                } else {
+                    const botMessage = document.createElement('div');
+                    botMessage.className = 'bot-message message';
+                    botMessage.textContent = `Bot: ${answer}`;
+                    chatbox.appendChild(botMessage);
+                }
+ //Made By NEPCODER @DEVSNP
+                chatbox.scrollTop = chatbox.scrollHeight;
+            } catch (error) {
+                addMessage("Oops! An error occurred while fetching the answer.");
+            }
+        }
+ //Made By NEPCODER @DEVSNP
+        async function sendMessage() {
+            const userMessage = questionTypeBox.value;
+            if (userMessage.trim() !== '') {
+                addMessage(`You: ${userMessage}`, true);
 
-# Create a scrollbar for the chat box
-scrollbar = ttk.Scrollbar(chat_frame, command=chat_box.yview)
-scrollbar.grid(row=0, column=1, sticky="ns")
-chat_box.configure(yscrollcommand=scrollbar.set)
+         //Made By Nepcoder @DEVSNP 
+                const loadingMessage = document.createElement('div');
+                loadingMessage.className = 'bot-message message';
+                loadingMessage.textContent = "Bot: Answer is loading...";
+                chatbox.appendChild(loadingMessage);
+//Made By NEPCODER @DEVSNP
+                await fetchAnswerFromAPI(userMessage); // Wait for the answer
+            }
+            questionTypeBox.value = '';
+        }
 
-# Set the minimum size for chat_frame
-chat_frame.grid_columnconfigure(0, weight=1)
-chat_frame.grid_rowconfigure(0, weight=1)
 
 
-# Create an entry field for user input
-entry = tk.Entry(window, bg="white", fg="#333333", font=(FONT_FAMILY, FONT_SIZE))
-entry.grid(row=1, column=0, padx=10, pady=(0, 10), sticky="ew")
 
-# Create a button to send messages
-send_button = tk.Button(window, text="Send", command=send_message, bg="#007bff", fg="white", font=(FONT_FAMILY, FONT_SIZE))
-send_button.grid(row=1, column=1, padx=10, pady=(0, 10), sticky="e")
 
-# Bind Enter key press to send_message function
-window.bind('<Return>', send_message)
 
-# Configure hover effects for the send button
-send_button.bind("<Enter>", on_enter)
-send_button.bind("<Leave>", on_leave)
 
-# Create a progress bar for loading animation
-style = ttk.Style()
-style.configure("TProgressbar", thickness=20)
-progress_bar = ttk.Progressbar(window, style="TProgressbar", mode="indeterminate")
-progress_bar.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
 
-# Create a label for typing animation
-typing_label = tk.Label(window, text="", font=(FONT_FAMILY, FONT_SIZE), bg=BG_COLOR, fg=AI_COLOR)
-typing_label.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
+    </script>
 
-# Set focus to the entry field
-entry.focus()
-
-# Configure grid weights to make the chat box expandable
-window.grid_columnconfigure(0, weight=1)
-window.grid_rowconfigure(0, weight=1)
-
-# Run the main event loop
-window.mainloop()
+</body>
+</html>
