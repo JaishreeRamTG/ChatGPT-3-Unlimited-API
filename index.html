@@ -3,120 +3,101 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MysticxAi</title>
+  <title>Image Gallery</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
-    header {
-      text-align: center;
-      padding: 10px;
-      background: #333;
-      color: white;
-      font-size: 24px;
-    }
-    main {
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
       padding: 20px;
-      text-align: center;
     }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .search-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
     input[type="text"] {
       padding: 10px;
       width: 300px;
-      margin-right: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
     }
-    button {
-      padding: 10px 20px;
-    }
+
     .gallery {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
+      margin-top: 20px; /* Added margin to move the first image downward */
     }
+
     .gallery img {
       width: 300px;
       height: 200px;
       object-fit: cover;
-      cursor: pointer;
       border-radius: 5px;
-      transition: transform 0.2s;
-    }
-    .gallery img:hover {
-      transform: scale(1.05);
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <header>MysticxAi</header>
-  <main>
-    <input type="text" id="searchQuery" placeholder="Search images..." />
-    <button onclick="searchImages()">Search</button>
-    <div class="gallery" id="gallery"></div>
-    <div id="pagination"></div>
-  </main>
+  <div class="container">
+    <h1>Image Gallery</h1>
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Search for images..." />
+    </div>
+    <div id="gallery" class="gallery"></div>
+  </div>
 
   <script>
-    let currentPage = 1;
-    let imagesPerPage = 5;
-    let currentQuery = "";
+    const gallery = document.getElementById('gallery');
+    const searchInput = document.getElementById('searchInput');
 
-    async function searchImages(page = 1) {
-      const query = document.getElementById("searchQuery").value;
-      if (query !== currentQuery) {
-        currentQuery = query; // Store the query
-        currentPage = 1; // Reset page on new search
-      }
-      const url = `https://pixabay.com/api/?key=20771822-0655996b02b357ba51617fa76&per_page=50&q=${encodeURIComponent(
-        currentQuery
-      )}`;
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-        displayImages(data.hits, page);
-      } catch (error) {
-        console.error("Error fetching images:", error);
-      }
-    }
+    const images = [
+      'https://cdn.pixabay.com/photo/2023/04/01/18/19/sunset-7892948_1280.jpg',
+      'https://cdn.pixabay.com/photo/2023/03/19/15/15/mountains-7863503_1280.jpg',
+      'https://cdn.pixabay.com/photo/2023/02/10/17/05/forest-7780764_1280.jpg',
+      'https://cdn.pixabay.com/photo/2023/03/13/20/17/flower-7850551_1280.jpg',
+      'https://cdn.pixabay.com/photo/2023/04/09/12/28/sea-7910436_1280.jpg',
+      'https://cdn.pixabay.com/photo/2023/03/30/19/44/sunset-7890438_1280.jpg',
+      'https://cdn.pixabay.com/photo/2023/02/27/16/12/forest-7820192_1280.jpg',
+      'https://cdn.pixabay.com/photo/2023/04/15/11/07/lake-7925811_1280.jpg',
+      'https://cdn.pixabay.com/photo/2023/01/15/09/28/sunrise-7719615_1280.jpg',
+    ];
 
-    function displayImages(images, page) {
-      const gallery = document.getElementById("gallery");
-      gallery.innerHTML = "";
-
-      // Calculate start and end index for pagination
-      const startIndex = (page - 1) * imagesPerPage;
-      const endIndex = startIndex + imagesPerPage;
-      const paginatedImages = images.slice(startIndex, endIndex);
-
-      paginatedImages.forEach((image) => {
-        const imgElement = document.createElement("img");
-        imgElement.src = image.largeImageURL; // Use HD image
-        imgElement.alt = image.tags;
-        imgElement.title = image.tags;
-
+    function displayImages(filteredImages) {
+      gallery.innerHTML = '';
+      filteredImages.forEach((image) => {
+        const imgElement = document.createElement('img');
+        imgElement.src = image;
+        imgElement.alt = 'Gallery Image';
+        imgElement.onclick = () => window.open(image, '_blank');
         gallery.appendChild(imgElement);
       });
-
-      displayPagination(images.length, page);
     }
 
-    function displayPagination(totalImages, page) {
-      const pagination = document.getElementById("pagination");
-      pagination.innerHTML = "";
+    searchInput.addEventListener('input', (e) => {
+      const searchValue = e.target.value.toLowerCase();
+      const filteredImages = images.filter((image) =>
+        image.toLowerCase().includes(searchValue)
+      );
+      displayImages(filteredImages);
+    });
 
-      const totalPages = Math.ceil(totalImages / imagesPerPage);
-
-      for (let i = 1; i <= totalPages; i++) {
-        const button = document.createElement("button");
-        button.innerText = i;
-        button.onclick = () => searchImages(i);
-        if (i === page) {
-          button.style.fontWeight = "bold";
-        }
-        pagination.appendChild(button);
-      }
-    }
+    displayImages(images);
   </script>
 </body>
 </html>
